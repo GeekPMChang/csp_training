@@ -4,30 +4,30 @@
 #include<set>
 using namespace std;
 
-struct point
+struct Point
 {
 	int x;
 	int y;
-	bool operator < (const point& a) const
+	bool operator < (const Point& a) const
 	{
 		if (x != a.x) return x < a.x;
 		return y < a.y;
 	}
 };
-int point_num = 0;//分裂次数
-set<point> s;//点集
-set<point> copy_s;//工具人
-int time[100];//每次的分裂次数
+int split_num = 0;//分裂次数
+set<Point> s_gather;//点集
+set<Point> copy_s;//工具人
+int split_time[100];//每次的分裂次数
 int dx[8] = { 0,1,1,1,0,-1,-1,-1 };
 int dy[8] = { 1,1,0,-1,-1,-1,0,1 };
 //angle    0,1,2,3,4, 5, 6, 7
 void DFS(int begin_x, int begin_y, int angle, int id)
 {
-	if (id > point_num)
+	if (id > split_num)
 		return;
 
-	DFS(begin_x + time[id] * dx[angle], begin_y + time[id] * dy[angle], (angle + 1) % 8, id + 1);
-	for (set<point>::iterator it = s.begin(); it != s.end(); it++)
+	DFS(begin_x + split_time[id] * dx[angle], begin_y + split_time[id] * dy[angle], (angle + 1) % 8, id + 1);
+	for (set<Point>::iterator it = s_gather.begin(); it != s_gather.end(); it++)
 	{
 		if (angle % 4 == 0)
 			copy_s.insert({ 2 * begin_x - (it->x),it->y });
@@ -39,22 +39,22 @@ void DFS(int begin_x, int begin_y, int angle, int id)
 			copy_s.insert({ begin_x + begin_y - (it->y),begin_x + begin_y - (it->x) });
 
 	}
-	s.insert(copy_s.begin(), copy_s.end());
+	s_gather.insert(copy_s.begin(), copy_s.end());
 	copy_s.clear();
-	for (int i = 0; i < time[id]; i++)
+	for (int i = 0; i < split_time[id]; i++)
 	{
 		begin_x = begin_x + dx[angle];
 		begin_y = begin_y + dy[angle];
-		s.insert({ begin_x,begin_y });
+		s_gather.insert({ begin_x,begin_y });
 	}
 }
 
 int main()
 {
-	scanf("%d", &point_num);
-	for (int i = 1; i <= point_num; i++)
-		scanf("%d", &time[i]);
+	scanf("%d", &split_num);
+	for (int i = 1; i <= split_num; i++)
+		scanf("%d", &split_time[i]);
 	DFS(0, 0, 0, 1);
-	printf("%d", s.size());
+	printf("%d", s_gather.size());
 	return 0;
 }
